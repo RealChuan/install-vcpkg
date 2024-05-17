@@ -29,8 +29,7 @@ runs:
       run: |
         sudo chmod +x ${{ github.action_path }}/macos/install-vcpkg.sh
         sudo ${{ github.action_path }}/macos/install-vcpkg.sh \
-        ${{ inputs.repo }} \
-        ${{ inputs.branch }}
+          ${{ inputs.repo }} ${{ inputs.branch }}
 
     - name: Install vcpkg on ubuntu
       if: startsWith(runner.os, 'Linux')
@@ -38,5 +37,4 @@ runs:
       run: |
         sudo chmod +x ${{ github.action_path }}/ubuntu/install-vcpkg.sh
         sudo ${{ github.action_path }}/ubuntu/install-vcpkg.sh \
-        ${{ inputs.repo }} \
-        ${{ inputs.branch }}
+          ${{ inputs.repo }} ${{ inputs.branch }}

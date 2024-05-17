@@ -12,7 +12,6 @@ on:
         - 'LICENSE'
         - 'README*'
 
-
 jobs:
   build:
     name: Test
@@ -25,7 +24,6 @@ jobs:
           - windows-latest
           - macos-latest
         branch: [dev]
-
 
     steps:
       - name: Install Custom VCPKG
@@ -59,3 +57,8 @@ jobs:
               echo "错误：当前分支不是${{ matrix.branch }}"
               exit 1
           fi
+
+      - name: Check vcpkg version
+        shell: bash
+        run: |
+          vcpkg --version
