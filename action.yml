@@ -32,11 +32,11 @@ runs:
         ${{ inputs.repo }} \
         ${{ inputs.branch }}
 
-    - name: Install vcpkg on linux
+    - name: Install vcpkg on ubuntu
       if: startsWith(runner.os, 'Linux')
       shell: bash
       run: |
-        sudo chmod +x ${{ github.action_path }}/linux/install-vcpkg.sh
-        sudo ${{ github.action_path }}/linux/install-vcpkg.sh \
+        sudo chmod +x ${{ github.action_path }}/ubuntu/install-vcpkg.sh
+        sudo ${{ github.action_path }}/ubuntu/install-vcpkg.sh \
         ${{ inputs.repo }} \
         ${{ inputs.branch }}

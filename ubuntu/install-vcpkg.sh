@@ -15,8 +15,6 @@ if [ -d "$VCPKG_INSTALLATION_ROOT" ]; then
     rm -rf "$VCPKG_INSTALLATION_ROOT"
 fi
 
-set_etc_environment_variable "VCPKG_INSTALLATION_ROOT" "${VCPKG_INSTALLATION_ROOT}"
-
 # Install vcpkg
 git clone --branch "${BRANCH_NAME}" "${REPO_URL}" ${VCPKG_INSTALLATION_ROOT}
 
