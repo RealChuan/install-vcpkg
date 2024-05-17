@@ -1,0 +1,42 @@
+name: 'Install Custom VCPKG'
+description: 'Install a custom VCPKG instance from a specified repository and branch'
+author: 'https://github.com/RealChuan/install-vcpkg'
+
+inputs:
+  repo:
+    description: 'The repository URL'
+    default: 'https://github.com/microsoft/vcpkg'
+    required: false
+  branch:
+    description: 'The branch name'
+    default: 'master'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install vcpkg on windows
+      if: startsWith(runner.os, 'Windows')
+      shell: pwsh
+      run: |
+        ${{ github.action_path }}/windows/Install-Vcpkg.ps1 `
+        -RepoUrl ${{ inputs.repo }} `
+        -Branch ${{ inputs.branch }}
+
+    - name: Install vcpkg on macos
+      if: startsWith(runner.os, 'macOS')
+      shell: bash
+      run: |
+        sudo chmod +x ${{ github.action_path }}/macos/install-vcpkg.sh
+        sudo ${{ github.action_path }}/macos/install-vcpkg.sh \
+        ${{ inputs.repo }} \
+        ${{ inputs.branch }}
+
+    - name: Install vcpkg on linux
+      if: startsWith(runner.os, 'Linux')
+      shell: bash
+      run: |
+        sudo chmod +x ${{ github.action_path }}/linux/install-vcpkg.sh
+        sudo ${{ github.action_path }}/linux/install-vcpkg.sh \
+        ${{ inputs.repo }} \
+        ${{ inputs.branch }}
