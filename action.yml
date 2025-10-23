@@ -19,9 +19,9 @@ runs:
       if: startsWith(runner.os, 'Windows')
       shell: pwsh
       run: |
-        ${{ github.action_path }}/windows/Install-Vcpkg.ps1 `
-        -RepoUrl ${{ inputs.repo }} `
-        -Branch ${{ inputs.branch }}
+        & '${{ github.action_path }}\windows\Install-Vcpkg.ps1' `
+          -RepoUrl '${{ inputs.repo }}' `
+          -Branch '${{ inputs.branch }}'
 
     - name: Install vcpkg on macos
       if: startsWith(runner.os, 'macOS')
@@ -29,7 +29,7 @@ runs:
       run: |
         sudo chmod +x ${{ github.action_path }}/macos/install-vcpkg.sh
         sudo ${{ github.action_path }}/macos/install-vcpkg.sh \
-          ${{ inputs.repo }} ${{ inputs.branch }}
+          '${{ inputs.repo }}' '${{ inputs.branch }}'
 
     - name: Install vcpkg on ubuntu
       if: startsWith(runner.os, 'Linux')
@@ -37,4 +37,4 @@ runs:
       run: |
         sudo chmod +x ${{ github.action_path }}/ubuntu/install-vcpkg.sh
         sudo ${{ github.action_path }}/ubuntu/install-vcpkg.sh \
-          ${{ inputs.repo }} ${{ inputs.branch }}
+          '${{ inputs.repo }}' '${{ inputs.branch }}'
