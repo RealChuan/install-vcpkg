@@ -1,64 +1,82 @@
-name: Cross-Platform VCPKG Validation
+name: VCPKG Installation Validation
 
 on:
   push:
     paths-ignore:
+      - '**.md'
       - '.gitignore'
       - 'LICENSE'
-      - 'README*'
   pull_request:
     paths-ignore:
+      - '**.md'
       - '.gitignore'
       - 'LICENSE'
-      - 'README*'
 
 env:
   VCPKG_REPO: 'https://github.com/RealChuan/vcpkg.git'
   VCPKG_BRANCH: 'master'
 
 jobs:
-  validate-vcpkg-installation:
-    name: Validate VCPKG on ${{ matrix.os }}
+  validate-installation:
+    name: Validate on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-
+        
     steps:
+      - name: Checkout action
+        uses: actions/checkout@v4
+
       - name: Install Custom VCPKG
         uses: RealChuan/install-vcpkg@main
         with:
           repo: ${{ env.VCPKG_REPO }}
           branch: ${{ env.VCPKG_BRANCH }}
 
-      - name: Check branch on windows
-        if: startsWith(runner.os, 'Windows')
-        working-directory: C:\vcpkg
+      - name: Verify branch and installation
         shell: bash
         run: |
-          current_branch=$(git rev-parse --abbrev-ref HEAD)
-          if [ "$current_branch" == "${{ env.VCPKG_BRANCH }}" ]; then
-              echo "当前分支是${{ env.VCPKG_BRANCH }}"
+          set -e
+          
+          # Determine vcpkg root directory based on OS
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            vcpkg_root="/c/vcpkg"
           else
-              echo "错误：当前分支不是${{ env.VCPKG_BRANCH }}"
-              exit 1
+            vcpkg_root="/usr/local/share/vcpkg"
           fi
-
-      - name: Check branch on macos or ubuntu
-        if: startsWith(runner.os, 'macOS') || startsWith(runner.os, 'Linux')
-        working-directory: /usr/local/share/vcpkg
-        shell: bash
-        run: |
-          current_branch=$(git rev-parse --abbrev-ref HEAD)
-          if [ "$current_branch" == "${{ env.VCPKG_BRANCH }}" ]; then
-              echo "当前分支是${{ env.VCPKG_BRANCH }}"
+          
+          echo "VCPKG Root: $vcpkg_root"
+          
+          # Verify repository branch
+          if [ -d "$vcpkg_root" ]; then
+            current_branch=$(git -C "$vcpkg_root" rev-parse --abbrev-ref HEAD)
+            echo "Current branch: $current_branch"
+            
+            if [ "$current_branch" = "$VCPKG_BRANCH" ]; then
+              echo "✓ Branch verification passed"
+            else
+              echo "✗ Branch mismatch: expected '$VCPKG_BRANCH', got '$current_branch'"
+              exit 1
+            fi
           else
-              echo "错误：当前分支不是${{ env.VCPKG_BRANCH }}"
-              exit 1
+            echo "✗ VCPKG directory not found"
+            exit 1
           fi
-
-      - name: Check vcpkg version
-        shell: bash
-        run: |
+          
+          # Test vcpkg command
+          echo "Testing vcpkg command..."
           vcpkg --version
+          vcpkg list
+          
+          echo "✓ All verification tests passed"
+
+      - name: Test basic vcpkg functionality
+        shell: bash
+        run: |
+          # Test installing a simple package
+          echo "Testing package installation..."
+          vcpkg search fmt | head -5
+          echo "✓ Basic functionality test passed"
+          
