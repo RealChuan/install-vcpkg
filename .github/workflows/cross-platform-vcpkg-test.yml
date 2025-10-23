@@ -27,7 +27,7 @@ jobs:
         
     steps:
       - name: Checkout action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Custom VCPKG
         uses: RealChuan/install-vcpkg@main
